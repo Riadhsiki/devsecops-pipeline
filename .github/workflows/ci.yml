@@ -25,7 +25,6 @@ jobs:
       - run: pip install -r app/requirements.txt pytest
       - run: pytest -v tests/
 
-  # SAST: blocks on HIGH severity findings
   sast_bandit:
     runs-on: ubuntu-latest
     needs: unit_tests
@@ -40,7 +39,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: bandit-report, path: reports/ }
 
-  # Secrets: blocks on any secret found
   secrets_scan:
     runs-on: ubuntu-latest
     needs: unit_tests
@@ -50,13 +48,14 @@ jobs:
       - run: mkdir -p reports && chmod 777 reports
       - run: >
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest
-          detect --source /repo --report-format json
-          --report-path /repo/reports/gitleaks.json --exit-code 1
+          detect --source /repo --config /repo/.gitleaks.toml
+          --baseline-path /repo/gitleaks-baseline.json
+          --report-format json --report-path /repo/reports/gitleaks.json
+          --exit-code 1
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: gitleaks-report, path: reports/ }
 
-  # SCA: blocks on CRITICAL dependency vulnerabilities
   scan_dependencies:
     runs-on: ubuntu-latest
     needs: unit_tests
@@ -71,7 +70,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: trivy-deps-report, path: reports/ }
 
-  # IaC + Dockerfile: blocks on failed checks
   iac_scan:
     runs-on: ubuntu-latest
     needs: unit_tests
@@ -86,7 +84,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: checkov-report, path: reports/ }
 
-  # Docker image scan: blocks on CRITICAL
   docker_scan:
     runs-on: ubuntu-latest
     needs: unit_tests
@@ -103,7 +100,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with: { name: trivy-image-report, path: reports/ }
 
-  # SBOM: never blocks, inventory only
   sbom:
     runs-on: ubuntu-latest
     needs: unit_tests

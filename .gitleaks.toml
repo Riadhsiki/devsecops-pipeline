@@ -1,0 +1,14 @@
+title = "devsecops custom rules"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "hardcoded-password"
+description = "Hardcoded password assignment"
+regex = '''(?i)(password|passwd|pwd)\s*=\s*["'][^"']{6,}["']'''
+tags = ["password"]
+
+[allowlist]
+description = "Ignore reports"
+paths = ['''reports/''', '''gitleaks-baseline.json''']
