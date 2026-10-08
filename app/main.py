@@ -30,18 +30,18 @@ def init_db():
 init_db()
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     return "DevSecOps demo app"
 
 
-@app.route("/health")
+@app.route("/health", methods=["GET"])
 def health():
     return jsonify(status="ok")
 
 
 # VULN: SQL injection
-@app.route("/user")
+@app.route("/user", methods=["GET"])
 def user():
     name = request.args.get("name", "")
     conn = sqlite3.connect(DB_PATH)
@@ -49,14 +49,14 @@ def user():
 
 
 # VULN: OS command injection
-@app.route("/ping")
+@app.route("/ping", methods=["GET"])
 def ping():
     host = request.args.get("host", "127.0.0.1")
     return subprocess.run(["ping", "-c", "1", host], capture_output=True, text=True).stdout
 
 
 # VULN: reflected XSS
-@app.route("/hello")
+@app.route("/hello", methods=["GET"])
 def hello():
     name = request.args.get("name", "world")
     return "<h1>Hello " + escape(name) + "</h1>"
@@ -69,7 +69,7 @@ def parse_yaml():
 
 
 # VULN: path traversal
-@app.route("/file")
+@app.route("/file", methods=["GET"])
 def read_file():
     name = request.args.get("name", "")
     try:
@@ -80,13 +80,13 @@ def read_file():
 
 
 # VULN: SSRF
-@app.route("/fetch")
+@app.route("/fetch", methods=["GET"])
 def fetch():
     return requests.get(request.args.get("url", ""), timeout=5).text[:500]
 
 
 # VULN: weak hashing
-@app.route("/hash")
+@app.route("/hash", methods=["GET"])
 def hash_pw():
     return hashlib.sha256(request.args.get("pw", "").encode()).hexdigest()
 
