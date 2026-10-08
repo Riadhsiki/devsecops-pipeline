@@ -48,3 +48,19 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "data" {
     }
   }
 }
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_kms_key_policy" "data" {
+  key_id = aws_kms_key.data.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid       = "AdminOnly"
+      Effect    = "Allow"
+      Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" }
+      Action    = "kms:*"
+      Resource  = "*"
+    }]
+  })
+}
