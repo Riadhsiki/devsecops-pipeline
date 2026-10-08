@@ -21,9 +21,10 @@ DB_PATH = os.environ.get("DB_PATH", "db.sqlite")
 def add_security_headers(resp):
     resp.headers["X-Frame-Options"] = "DENY"
     resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["Content-Security-Policy"] = "default-src 'self'"
+    resp.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'; form-action 'self'"
     resp.headers["Permissions-Policy"] = "geolocation=(), camera=()"
     resp.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    resp.headers["Cross-Origin-Opener-Policy"] = "same-origin"
     resp.headers["Cache-Control"] = "no-store"
     resp.headers["Server"] = "app"
     return resp
