@@ -7,7 +7,7 @@ import subprocess
 
 import requests
 import yaml
-from flask import Flask, request
+from flask import Flask, jsonify, request
 
 from config import SECRET_KEY
 
@@ -37,7 +37,7 @@ def index():
 
 @app.route("/health")
 def health():
-    return {"status": "ok"}
+    return jsonify(status="ok")
 
 
 # VULN: SQL injection
