@@ -1,0 +1,22 @@
+stages:
+  - build
+  - test
+  - sast
+  - scan_dependencies
+  - secrets_scan
+  - docker_scan
+  - dast
+
+build:
+  stage: build
+  image: python:3.8-slim
+  script:
+    - pip install -r app/requirements.txt
+    - python -m py_compile app/main.py
+
+unit_tests:
+  stage: test
+  image: python:3.8-slim
+  script:
+    - pip install -r app/requirements.txt pytest
+    - pytest -v tests/
