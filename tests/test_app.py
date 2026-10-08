@@ -27,4 +27,4 @@ def test_hello():
 
 def test_hash():
     r = client.get("/hash?pw=test")
-    assert r.data.decode() == "098f6bcd4621d373cade4e832627b4f6"
+    assert r.data.decode() == "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
