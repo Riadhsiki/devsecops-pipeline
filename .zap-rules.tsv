@@ -1,0 +1,2 @@
+10036	IGNORE	Werkzeug dev server sets Server header; production uses gunicorn behind a proxy (accepted by Riadh, 2026-10-09)
+10049	IGNORE	no-store is intentional for an API returning dynamic data (accepted by Riadh, 2026-10-09)

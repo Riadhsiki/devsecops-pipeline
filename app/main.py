@@ -17,6 +17,20 @@ app.secret_key = SECRET_KEY
 DB_PATH = os.environ.get("DB_PATH", "db.sqlite")
 
 
+@app.after_request
+def add_security_headers(resp):
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["Content-Security-Policy"] = "default-src 'self'; frame-ancestors 'none'; form-action 'self'"
+    resp.headers["Permissions-Policy"] = "geolocation=(), camera=()"
+    resp.headers["Cross-Origin-Embedder-Policy"] = "require-corp"
+    resp.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    resp.headers["Cache-Control"] = "no-store"
+    resp.headers["Server"] = "app"
+    return resp
+
+
+
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, role TEXT)")
