@@ -2,6 +2,8 @@ import os
 import sys
 
 os.environ["DB_PATH"] = "/tmp/test_db.sqlite"
+os.environ.setdefault("SECRET_KEY", "test-only-value")
+os.environ.setdefault("SECRET_KEY", "test-only-value")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "app"))
 
 from main import app  # noqa: E402

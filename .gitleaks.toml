@@ -11,4 +11,4 @@ tags = ["password"]
 
 [allowlist]
 description = "Ignore reports"
-paths = ['''reports/''']
+paths = ['''reports/''', '''gitleaks-baseline.json''']
