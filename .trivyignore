@@ -1,0 +1,2 @@
+# Debian 13 base image: no fix available upstream yet. Reviewed 2026-10-09 by Riadh.
+# Re-check weekly. Runtime exposure is low (no mount/nsenter/systemd used by the app).

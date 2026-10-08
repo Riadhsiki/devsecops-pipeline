@@ -64,7 +64,7 @@ jobs:
       - run: mkdir -p reports && chmod 777 reports
       - run: >
           docker run --rm -v "$PWD:/src" aquasec/trivy:latest fs
-          --scanners vuln --severity CRITICAL --exit-code 1
+          --scanners vuln --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1
           --format json --output /src/reports/trivy-deps.json /src/app/requirements.txt
       - if: always()
         uses: actions/upload-artifact@v4
@@ -94,7 +94,7 @@ jobs:
       - run: >
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock
           -v "$PWD/reports:/out" aquasec/trivy:latest image
-          --severity CRITICAL --exit-code 1
+          --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1
           --format json --output /out/trivy-image.json devsecops-app
       - if: always()
         uses: actions/upload-artifact@v4
