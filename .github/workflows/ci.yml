@@ -193,3 +193,20 @@ jobs:
           if [ -z "$URL" ]; then echo "Secret WEBHOOK_URL vide ou absent"; exit 1; fi
           if [ "$FAILED" = "true" ]; then MSG="[ECHEC] Pipeline"; else MSG="[OK] Pipeline"; fi
           curl -sS --fail -H "Content-Type: application/json" -d "{\"content\":\"$MSG - $REPO ($BRANCH, ${SHA:0:7}) $RUN_URL\"}" "$URL"
+
+  notify:
+    needs: [build, unit_tests, sast_bandit, secrets_scan, scan_dependencies, iac_scan, docker_scan, sbom, dast_zap, publish_image, deploy_staging]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          FAILED: ${{ contains(needs.*.result, 'failure') }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$FAILED" = "true" ]; then MSG="[ECHEC] Pipeline"; else MSG="[OK] Pipeline"; fi
+          curl -s -H "Content-Type: application/json" -d "{\"content\":\"$MSG - $REPO ($BRANCH, ${SHA:0:7}) $RUN_URL\"}" "$https://discord.com/api/webhooks/1558056575623757874/rJusUpCuYo9Sa55WeyXNeAM-OmBhDs4-sxpymM1zHf2TlsODn5n6s_5Rq_PRtlbErxHE"
