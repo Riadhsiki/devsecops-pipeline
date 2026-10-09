@@ -177,6 +177,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Discord notification
+        continue-on-error: true
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           FAILED: ${{ contains(needs.*.result, 'failure') }}
@@ -185,5 +186,7 @@ jobs:
           SHA: ${{ github.sha }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
+          URL=$(printf '%s' "$WEBHOOK_URL" | tr -d '[:space:]')
+          if [ -z "$URL" ]; then echo "Secret WEBHOOK_URL vide ou absent"; exit 1; fi
           if [ "$FAILED" = "true" ]; then MSG="[ECHEC] Pipeline"; else MSG="[OK] Pipeline"; fi
-          curl -s -H "Content-Type: application/json" -d "{\"content\":\"$MSG - $REPO ($BRANCH, ${SHA:0:7}) $RUN_URL\"}" "$WEBHOOK_URL"
+          curl -sS --fail -H "Content-Type: application/json" -d "{\"content\":\"$MSG - $REPO ($BRANCH, ${SHA:0:7}) $RUN_URL\"}" "$URL"
