@@ -173,6 +173,9 @@ jobs:
 
   notify:
     needs: [build, unit_tests, sast_bandit, secrets_scan, scan_dependencies, iac_scan, docker_scan, sbom, dast_zap, publish_image, deploy_staging]
+
+  notify:
+    needs: [build, unit_tests, sast_bandit, secrets_scan, scan_dependencies, iac_scan, docker_scan, sbom, dast_zap, publish_image, deploy_staging]
     if: always()
     runs-on: ubuntu-latest
     steps:
