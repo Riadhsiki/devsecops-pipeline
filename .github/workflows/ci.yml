@@ -132,3 +132,41 @@ jobs:
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: zap-report, path: reports/ }
+
+  publish_image:
+    needs: [build, unit_tests, sast_bandit, secrets_scan, scan_dependencies, iac_scan, docker_scan, sbom, dast_zap]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Build and push image
+        run: |
+          IMAGE=ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t $IMAGE:${{ github.sha }} -t $IMAGE:latest .
+          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:latest
+
+  deploy_staging:
+    needs: [publish_image]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Deploy to staging and smoke test
+        run: |
+          IMAGE=ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]'):${{ github.sha }}
+          docker pull $IMAGE
+          docker run -d --name staging -p 5000:5000 -e SECRET_KEY=${{ secrets.SECRET_KEY }} $IMAGE
+          sleep 5
+          curl -f http://localhost:5000/health
+          docker rm -f staging
