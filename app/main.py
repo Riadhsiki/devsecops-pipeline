@@ -104,7 +104,8 @@ def fetch():
 @app.route("/hash", methods=["GET"])
 def hash_pw():
     return hashlib.sha256(request.args.get("pw", "").encode()).hexdigest()
-
+def get_user(cursor, name):
+    cursor.execute("SELECT * FROM users WHERE name = '" + name + "'")
 
 if __name__ == "__main__":
     # VULN: debug mode, all interfaces
