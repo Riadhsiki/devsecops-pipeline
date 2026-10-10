@@ -76,3 +76,5 @@ Suivi des vulnerabilites applicatives : [docs/security-tickets.md](docs/security
 git checkout as-is-baseline    # etat initial
 git checkout to-be-secured     # etat securise
 ```
+
+Derniere verification : scenario de demonstration valide.
