@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: pip install bandit
       - run: mkdir -p reports
-      - run: bandit -r app -f json -o reports/bandit.json --severity-level high
+      - run: bandit -r app -f json -o reports/bandit.json --severity-level medium
       - if: always()
         run: bandit -r app -f html -o reports/bandit.html || true
       - if: always()
