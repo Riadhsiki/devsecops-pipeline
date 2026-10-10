@@ -109,3 +109,6 @@ def hash_pw():
 if __name__ == "__main__":
     # VULN: debug mode, all interfaces
     app.run(host=os.environ.get("APP_HOST", "127.0.0.1"), port=5000, debug=False)
+
+
+GITHUB_TOKEN = "ghp_a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8"
